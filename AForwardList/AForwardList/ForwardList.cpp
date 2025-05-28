@@ -69,7 +69,7 @@ void ForwardList::PushFront(int value)
 
 void ForwardList::PopFront()
 {
-	if (m_first == nullptr) 
+	if (IsEmpty())
 	{
 		return;
 	}
@@ -80,7 +80,7 @@ void ForwardList::PopFront()
 
 	--m_size;
 
-	if (m_first == nullptr)
+	if (IsEmpty())
 	{
 		m_last = nullptr;
 	}
@@ -88,7 +88,7 @@ void ForwardList::PopFront()
 
 bool ForwardList::IsEmpty() const
 {
-
+	return m_first == nullptr;
 }
 
 int ForwardList::Front() const
@@ -110,7 +110,20 @@ int ForwardList::Size() const
 
 void ForwardList::Erase(int value)
 {
+	if (!IsEmpty())
+	{
+		Node* current = m_first;
+		while (current != nullptr) 
+		{
+			Node* next = current->m_next;
+			delete current;
+			current = next;
+		}
 
+		m_first = nullptr;
+		m_last = nullptr;
+		m_size = 0;
+	}
 }
 
 void ForwardList::Insert(int value, int position)
@@ -125,16 +138,39 @@ void ForwardList::PushBackAverageNode()
 
 bool operator==(const ForwardList& l1, const ForwardList& l2)
 {
+	ForwardList::Node* nodeA = l1.m_first;
+	ForwardList::Node* nodeB = l2.m_first;
 
+	while (nodeA != nullptr && nodeB != nullptr) {
+		if (nodeA->m_value != nodeB->m_value) {
+			return false;
+		}
+		nodeA = a->m_next;
+		nodeB = b->m_next;
+	}
+
+	return nodeA == nullptr && nodeB == nullptr;
 }
 
-ForwardList operator+(const ForwardList& l1)
+ForwardList operator+(const ForwardList& l)
 {
-
+	
 }
 
 std::ostream& operator<<(std::ostream& o, const ForwardList& l)
 {
-
+	ForwardList::Node* current = l.m_first;
+	o << "[";
+	while(current != nullptr)
+	{
+		o << current->m_value;
+		if(current->m_next != nullptr)
+		{
+			o << " -> ";
+		}
+		current = current->m_next;
+	}
+	o << "]";
+	return o;
 }
 
