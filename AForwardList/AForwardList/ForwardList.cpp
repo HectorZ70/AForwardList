@@ -1,13 +1,17 @@
 #include "ForwardList.h"
 
-ForwardList::ForwardList()
-{
-
-}
+ForwardList::ForwardList() : m_first(nullptr), m_last(nullptr), m_size(0){}
 
 ForwardList::~ForwardList()
 {
-
+	Node* current = m_first;
+	while (current != nullptr) {
+		Node* next = current->m_next;
+		delete current;
+		current = next;
+	}
+	m_first = m_last = nullptr;
+	m_size = 0;
 }
 
 void ForwardList::PushBack(int value)
@@ -128,12 +132,37 @@ void ForwardList::Erase(int value)
 
 void ForwardList::Insert(int value, int position)
 {
+	if (position <= 0) {
+		PushFront(value);
+		return;
+	}
+	if (position >= m_size) {
+		PushBack(value);
+		return;
+	}
 
+	Node* current = m_first;
+	for (int i = 0; i < position - 1; ++i) {
+		current = current->m_next;
+	}
+
+	Node* newNode = new Node(value, current->m_next);
+	current->m_next = newNode;
+	m_size++;
 }
 
 void ForwardList::PushBackAverageNode()
 {
+	if (IsEmpty()) return;
 
+	int sum = 0;
+	Node* current = m_first;
+	while (current != nullptr) {
+		sum += current->m_value;
+		current = current->m_next;
+	}
+	int average = sum / m_size;
+	PushBack(average);
 }
 
 bool operator==(const ForwardList& l1, const ForwardList& l2)
@@ -145,8 +174,8 @@ bool operator==(const ForwardList& l1, const ForwardList& l2)
 		if (nodeA->m_value != nodeB->m_value) {
 			return false;
 		}
-		nodeA = a->m_next;
-		nodeB = b->m_next;
+		nodeA = nodeA->m_next;
+		nodeB = nodeB->m_next;
 	}
 
 	return nodeA == nullptr && nodeB == nullptr;
@@ -154,7 +183,14 @@ bool operator==(const ForwardList& l1, const ForwardList& l2)
 
 ForwardList operator+(const ForwardList& l)
 {
-	
+	ForwardList result;
+	ForwardList::Node* current = l.m_first;
+	while (current != nullptr)
+	{
+		result.PushBack(current->m_value);
+		current = current->m_next;
+	}
+	return result;
 }
 
 std::ostream& operator<<(std::ostream& o, const ForwardList& l)
